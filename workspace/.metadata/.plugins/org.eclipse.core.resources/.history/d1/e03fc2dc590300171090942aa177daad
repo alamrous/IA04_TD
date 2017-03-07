@@ -1,0 +1,10 @@
+package agent;
+import jade.core.Agent;
+
+public class HelloWord extends Agent {
+	
+protected void setup(){
+	String op = getLocalName();
+	System.out.println(op+" Hello World");}
+
+}

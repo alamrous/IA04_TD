@@ -1,0 +1,8 @@
+import jade.wrapper.AgentContainer;
+import jade.core.Runtime;
+public class MainBoot extends AgentContainer {
+
+	public void main() {
+		Runtime rt = Runtime.instance();
+}
+}

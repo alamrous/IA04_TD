@@ -1,6 +1,9 @@
 
+import java.awt.List;
+
 import jade.core.ProfileImpl;
 import jade.core.Runtime;
+import jade.util.leap.ArrayList;
 import jade.wrapper.AgentContainer;
 import jade.wrapper.AgentController;
 import jade.wrapper.ContainerController;
@@ -20,6 +23,7 @@ public static void main(String[] args){
 	ac3.start();
 	} catch (Exception ex) {
 	ex.printStackTrace();
+	System.out.println("test probleme");
 	}
 
 }

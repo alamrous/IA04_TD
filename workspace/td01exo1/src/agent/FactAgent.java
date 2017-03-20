@@ -2,6 +2,7 @@ package agent;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,6 +14,7 @@ import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.tools.testagent.ReceiveCyclicBehaviour;
+import jade.util.leap.Collection;
 
 public class FactAgent extends Agent {
 	private boolean test = false;
@@ -33,14 +35,55 @@ public class FactAgent extends Agent {
 			return false;
 		}
 
+		public void initializeAgentList(ArrayList<String> Agentlist){
+			Agentlist.add("MultAgent1");
+			Agentlist.add("MultAgent2");
+			Collections.shuffle(Agentlist);
+		}
+		public int sendOperationToAvailableAgent(ArrayList<Integer> list, FactMessage factMessage, int count, ObjectMapper mapper, ArrayList<String> Agentlist){
+			count= 0;
+			while (Agentlist.size() > 0) {
+				if (list.size() < 2)
+					break;
+				factMessage.setOp1(list.get(0));
+				factMessage.setOp2(list.get(1));
+				list.remove(0);
+				list.remove(0);
+				String s = null;
+				count = count+1;
+				System.out.println("ItÃ©ration du count"+count);
+				try {
+					s = mapper.writeValueAsString(factMessage);
+				} catch (JsonProcessingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				System.out.print("Message  Ã  "+Agentlist.get(0)+" contenu:"+s + "\n");
+				ACLMessage calcul_to_sendMessage = new ACLMessage(ACLMessage.REQUEST);
+				calcul_to_sendMessage.addReceiver(new AID(Agentlist.get(0), AID.ISLOCALNAME));
+				Agentlist.remove(0);
+				calcul_to_sendMessage.setContent(s);
+				send(calcul_to_sendMessage);
+			}
+return count;
+		}
+		
 		@Override
 		public void action() {
 			// TODO Auto-generated method stub
-//		initialisation des variables : resultat qui est à 0, le nombre à factoriser
+//		initialisation des variables : resultat qui est ï¿½ 0, le nombre ï¿½ factoriser
 			int resultat = 0;
 			int number_to_factorize = resultat;
 			int i = number_to_factorize;
-//			On recupère le message et on fait un test
+			int count = 0;
+
+			ObjectMapper mapper = new ObjectMapper();
+
+			//Initialisation de la liste des agents 
+			ArrayList<String> Agentlist = new ArrayList<>();
+			initializeAgentList(Agentlist);
+			
+//			On recupï¿½re le message et on fait un test
 			ACLMessage message = receive();
 			if (message != null && message.getPerformative() == ACLMessage.INFORM) {
 				{
@@ -54,80 +97,49 @@ public class FactAgent extends Agent {
 							list.add(i);
 						}
 						FactMessage factMessage = new FactMessage();
-						while(list.size() > 1)
+						while(list.size() > 1 )
 						{
-							factMessage.setOp1(list.get(0));
-							factMessage.setOp2(list.get(1));	
-							list.remove(0);
-							list.remove(0);
-							ObjectMapper mapper = new ObjectMapper();
-							String s = null;
-	
-							try {
-								s = mapper.writeValueAsString(factMessage);
-							} catch (JsonProcessingException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						System.out.print(s+"\n");	
-						ACLMessage calcul_to_sendMessage=new ACLMessage(ACLMessage.REQUEST);
-							calcul_to_sendMessage.addReceiver(new AID("MultAgent"+(int)(1+(Math.random())*2),AID.ISLOCALNAME));
-							calcul_to_sendMessage.setContent(s);
-							send(calcul_to_sendMessage);
-							message = receive(MessageTemplate.MatchPerformative(ACLMessage.INFORM));
-							if (message != null )	
-							{
-								message = receive();
-							}
-							try {
-								factMessage = mapper.readValue(message.getContent(), FactMessage.class);
-							} catch (IOException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-
-							list.add(factMessage.getResultat());
-						}
-//						On crée un tableau qui va contenir les valeur de 1,2,...,number_to_factorize
-						/*for (i=2; i<=number_to_factorize; i++){
-							factMessage.setOp1(resultat);
-							factMessage.setOp2(i);	
-							ObjectMapper mapper = new ObjectMapper();
-							String s = null;
-	
-							try {
-								s = mapper.writeValueAsString(factMessage);
-							} catch (JsonProcessingException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
+							count=sendOperationToAvailableAgent(list,factMessage,count,mapper,Agentlist);
+							System.out.println("Nb Messages Ã  recevoir :"+count+"\n");
 							
+							MessageTemplate messageTemplate = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
+								
+							while ( count >0)
+							{											
+								message = receive(messageTemplate);
+													
+								if(message == null )
+								{
+									if(count > 0)
+										continue;
+									}
+								else  
+								{
+									System.out.println("J'ai reÃ§u la rÃ©ponse de "+message.getSender().getLocalName());
+									try {
+										factMessage = mapper.readValue(message.getContent(), FactMessage.class);
+									} catch (IOException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
+									list.add(factMessage.getResultat());
+
+									count = count -1 ;
+									System.out.println("Plus que "+count+" rÃ©ponses");
+									
+								}
+							}
 						
 							
-							ACLMessage calcul_to_sendMessage=new ACLMessage(ACLMessage.REQUEST);
-							calcul_to_sendMessage.addReceiver(new AID("MultAgent",AID.ISLOCALNAME));
-							calcul_to_sendMessage.setContent(s);
-							send(calcul_to_sendMessage);
-							message = receive();
-							while (message == null || message.getPerformative() != ACLMessage.INFORM)	
-							{
-								message = receive();
-							
-							}
-							try {
-								factMessage = mapper.readValue(message.getContent(), FactMessage.class);
-							} catch (IOException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
 
-							resultat = factMessage.getResultat();
-						}*/
+							//list.add(factMessage.getResultat());
+							initializeAgentList(Agentlist);
+						}
+
 
 						resultat= list.get(0);
-
 					}
-					System.out.print("Le résultat de l'opération est :"+resultat);
+					System.out.print("Le rï¿½sultat de l'opï¿½ration est :"+resultat);
 				
 				}
 			} else

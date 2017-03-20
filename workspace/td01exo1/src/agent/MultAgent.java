@@ -70,27 +70,20 @@ public class MultBehaviour extends Behaviour{
 				}
 				
 				
-//		if (par.contains("x")) {
-//		String[] parameters = par.split("x");
-//		int n = Integer.parseInt(parameters[0].trim())
-//		* Integer.parseInt(parameters[1].trim());
-//		reply.setPerformative(ACLMessage.INFORM);
-//		reply.setContent(String.valueOf(n));
-//		}
-//		else {
-//		reply.setPerformative(ACLMessage.FAILURE);
-//		reply.setContent("unknown operator");
-//		}
-				try {
-					long number = (long) (0.5 + (Math.random() * ((5 - 0.5) + 1)));
-					TimeUnit.SECONDS.sleep(number);
-					System.out.print("je suis l'agent "+this.getAgent().getLocalName()+" je fais l'opération "+par+"J'ai attendu "+(double)number+" \n");
 
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} 
+				
+				
+//				try {
+//					long number = (long) (0.5 + (Math.random() * ((5 - 0.5) + 1)));
+//					TimeUnit.SECONDS.sleep(number);
+//					System.out.print("je suis l'agent "+this.getAgent().getLocalName()+" je fais l'opï¿½ration "+par+"J'ai attendu "+(double)number+" \n");
+//
+//				} catch (InterruptedException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				} 
 		send(reply);
+		System.out.println(getLocalName()+"envoie message de retour a Fact");
 		}
 
 }

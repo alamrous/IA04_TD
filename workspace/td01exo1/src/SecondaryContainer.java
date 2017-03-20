@@ -14,8 +14,10 @@ public static void main(String[] args){
 	ContainerController cc = rt.createAgentContainer(p);
 	AgentController ac = cc.createNewAgent("FactAgent", "agent.FactAgent",null);
 	ac.start();
-	AgentController ac2 = cc.createNewAgent("MultAgent", "agent.MultAgent",null);
+	AgentController ac2 = cc.createNewAgent("MultAgent2", "agent.MultAgent",null);
 	ac2.start();
+	AgentController ac3 = cc.createNewAgent("MultAgent1", "agent.MultAgent",null);
+	ac3.start();
 	} catch (Exception ex) {
 	ex.printStackTrace();
 	}

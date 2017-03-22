@@ -60,16 +60,17 @@ public class MediateBehaviour extends Behaviour{
 						}
 						if (messageToRoot.getPerformative() == ACLMessage.CONFIRM)
 						{
-							System.out.println("J'ai réussi l'opération "+parameters[0]+" Sur le nombre "+parameters[1]);
+							System.out.println("J'ai rï¿½ussi l'opï¿½ration "+parameters[0]+" Sur le nombre "+parameters[1]);
 							return;
 						}
-						System.out.println(messageToRoot.getContent());
+						System.out.println("Ici "+ messageToRoot.getContent());
 				 	
 		}
 		else
 			if (par.contains("affiche"))
 			{
-			messageToRoot.setConversationId("Affiche");
+			messageToRoot.setConversationId("affiche");
+			messageToRoot.setContent("((left)valeur(right))");
 			send(messageToRoot);
 			 mt = MessageTemplate.MatchConversationId("Affiche");
 			messageToRoot = receive(mt);

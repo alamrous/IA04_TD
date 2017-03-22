@@ -1,9 +1,0 @@
-import jade.core.Agent;
-
-public class HelloWord extends Agent {
-	
-protected void setup(){
-	addBehaviour(new PrintBehaviour(this,op));
-}
-
-}

@@ -5,6 +5,8 @@ package agent;
 
 import java.security.acl.Acl;
 
+import com.sun.xml.internal.ws.api.model.wsdl.editable.EditableWSDLMessage;
+
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
@@ -39,8 +41,8 @@ public class MediateBehaviour extends Behaviour{
 	@Override
 	public void action() {
 		// TODO Auto-generated method stub
-		ACLMessage message = receive();
-		if (message != null && message.getPerformative() == ACLMessage.REQUEST) {
+		ACLMessage message = receive(MessageTemplate.MatchPerformative(ACLMessage.REQUEST));
+		if (message != null) {
 			String par = message.getContent();
 	 		ACLMessage messageToRoot = new ACLMessage(ACLMessage.REQUEST);
 			messageToRoot.addReceiver(new AID("RootAgent", AID.ISLOCALNAME));
@@ -72,7 +74,7 @@ public class MediateBehaviour extends Behaviour{
 			messageToRoot.setConversationId("affiche");
 			messageToRoot.setContent("((left)valeur(right))");
 			send(messageToRoot);
-			 mt = MessageTemplate.MatchConversationId("Affiche");
+			 mt = MessageTemplate.MatchConversationId("affiche");
 			messageToRoot = receive(mt);
 			while(messageToRoot == null )
 			{
@@ -88,6 +90,7 @@ public class MediateBehaviour extends Behaviour{
 			}
 		
 	}
+		else block();
 	}
 
 	/* (non-Javadoc)
